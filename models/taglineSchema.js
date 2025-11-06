@@ -7,13 +7,9 @@ const taglineSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
-    discountPercent: {
-      type: Number,
-      required: true,
-    },
     isActive: {
       type: Boolean,
-      default: true, // only one tagline may be active at a time
+      default: false, // only one tagline may be active at a time
     },
     startDate: {
       type: Date,

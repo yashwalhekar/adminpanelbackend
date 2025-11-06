@@ -3,7 +3,7 @@ const Tagline = require("../models/taglineSchema.js");
 // ✅ Create tagline
 exports.createTagline = async (req, res) => {
   try {
-    const { text, discountPercent, startDate, endDate, isActive } = req.body;
+    const { text, startDate, endDate, isActive } = req.body;
 
     // Optional: deactivate old taglines if new one is active
     if (isActive) {
@@ -12,7 +12,6 @@ exports.createTagline = async (req, res) => {
 
     const tagline = new Tagline({
       text,
-      discountPercent,
       startDate,
       endDate,
       isActive,
@@ -32,18 +31,6 @@ exports.getAllTaglines = async (req, res) => {
     res.status(200).json(taglines);
   } catch (error) {
     res.status(500).json({ message: "Error fetching taglines", error });
-  }
-};
-
-// ✅ Get active tagline (for showing on website)
-exports.getActiveTagline = async (req, res) => {
-  try {
-    const tagline = await Tagline.findOne({ isActive: true });
-    if (!tagline)
-      return res.status(404).json({ message: "No active tagline found" });
-    res.status(200).json(tagline);
-  } catch (error) {
-    res.status(500).json({ message: "Error fetching active tagline", error });
   }
 };
 

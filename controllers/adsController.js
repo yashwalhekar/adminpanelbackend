@@ -1,29 +1,41 @@
 const Ad = require("../models/ads");
+const cloudinary = require("../config/cloudinary");
 
 // ✅ Create new Ad
 exports.createAd = async (req, res) => {
   try {
     const { title, isActive, startDate, endDate } = req.body;
 
-    if (!title || !req.file)
+    if (!title || !req.file) {
       return res.status(400).json({ message: "Title and image are required" });
+    }
 
-    const imageUrl = `${req.protocol}://${req.get("host")}/uploads/${
-      req.file.filename
-    }`;
+    // Upload image to Cloudinary
+    const uploadResult = await new Promise((resolve, reject) => {
+      const stream = cloudinary.uploader.upload_stream(
+        { folder: "ads" },
+        (error, result) => {
+          if (error) reject(error);
+          else resolve(result);
+        }
+      );
+      stream.end(req.file.buffer);
+    });
 
+    // Save Ad in DB
     const ad = await Ad.create({
       title,
-      imageUrl,
+      imageUrl: uploadResult.secure_url,
       isActive: isActive ?? false,
       startDate: startDate ? new Date(startDate) : new Date(),
       endDate: endDate ? new Date(endDate) : null,
+      createdBy: req.user._id, // if you track creator
     });
 
     res.status(201).json({ message: "Ad created successfully", ad });
   } catch (error) {
     console.error("Create ad error:", error);
-    res.status(500).json({ message: "Server error", error });
+    res.status(500).json({ message: "Server error", error: error.message });
   }
 };
 
@@ -68,10 +80,14 @@ exports.updateAd = async (req, res) => {
 
     const ad = await Ad.findById(id);
     if (!ad) return res.status(404).json({ message: "Ad not found" });
+
+    // If a new image is uploaded, replace the old one
     if (req.file) {
-      ad.imageUrl = `${req.protocol}://${req.get("host")}/uploads/${
-        req.file.filename
-      }`;
+      const uploadedImage = await cloudinary.uploader.upload(req.file.path, {
+        folder: "ads",
+        resource_type: "image",
+      });
+      ad.imageUrl = uploadedImage.secure_url;
     }
 
     ad.title = title || ad.title;
@@ -118,11 +134,6 @@ exports.updateAdStatus = async (req, res) => {
 
     const ad = await Ad.findById(id);
     if (!ad) return res.status(404).json({ message: "Ad not found" });
-
-    // Optional: Check if the logged-in user is the creator/admin
-    if (ad.createdBy && ad.createdBy.toString() !== req.user._id.toString()) {
-      return res.status(403).json({ message: "Not authorized" });
-    }
 
     ad.isActive = isActive;
     await ad.save();

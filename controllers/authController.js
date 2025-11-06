@@ -4,7 +4,7 @@ const jwt = require("jsonwebtoken");
 const User = require("../models/userSchema.js");
 
 const JWT_SECRET = process.env.JWT_SECRET;
-const TOKEN_EXPIRES_IN = process.env.TOKEN_EXPIRES_IN || "7d";
+const TOKEN_EXPIRES_IN = process.env.TOKEN_EXPIRES_IN || "0d";
 
 // ✅ Register User
 exports.registerUser = async (req, res) => {
