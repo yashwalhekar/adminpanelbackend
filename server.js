@@ -8,8 +8,7 @@ const authRoutes = require("./routes/authRoutes");
 const adsRoutes = require("./routes/adsRoutes");
 const taglineRoutes = require("./routes/taglineRoutes");
 const usersRoutes = require("./routes/userRoutes");
-const testimonialRoutes = require("./routes/testimonialRoutes");
-const blogsRoutes = require("./routes/blogsRoutes");
+
 const app = express();
 const PORT = process.env.PORT || 5000;
 
@@ -33,8 +32,6 @@ app.use("/api/auth", authRoutes);
 app.use("/api/ads", adsRoutes);
 app.use("/api/tagline", taglineRoutes);
 app.use("/api/users", usersRoutes);
-app.use("/api/testimonials", testimonialRoutes);
-app.use("/api/blogs", blogsRoutes);
 
 // ✅ Root endpoint
 app.get("/", (req, res) => res.send("Backend running successfully 🚀"));
