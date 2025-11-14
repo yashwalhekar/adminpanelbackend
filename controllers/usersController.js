@@ -1,102 +1,87 @@
 const UserForm = require("../models/userFormSchema.js");
 
-// ✅ Create a new user form
+// 🔹 Reusable error handler
+const handleError = (res, error, message) => {
+  console.error(message, error);
+  res.status(500).json({
+    success: false,
+    message,
+    error: error.message,
+  });
+};
+
+// ✅ CREATE - Add new UserForm
 exports.createUserForm = async (req, res) => {
   try {
-    const {
-      fullname,
-      surname,
-      country,
-      gender,
-      email,
-      phone,
-      address,
-      whyToChooseSpanish,
-      proficiencyLevel,
-      status,
-    } = req.body;
+    const { fullname, country, city, email, phone, status } = req.body;
 
     const newForm = new UserForm({
       fullname,
-      surname,
       country,
-      gender,
+      city,
       email,
       phone,
-      address,
-      whyToChooseSpanish,
-      proficiencyLevel,
       status,
     });
 
-    const savedForm = await newForm.save();
+    const savedData = await newForm.save();
 
     res.status(201).json({
       success: true,
       message: "User form submitted successfully!",
-      data: savedForm,
+      data: savedData,
     });
   } catch (error) {
-    console.error("Error creating user form:", error);
-    res.status(500).json({
-      success: false,
-      message: "Failed to create user form",
-      error: error.message,
-    });
+    handleError(res, error, "Failed to create user form");
   }
 };
 
-// ✅ Get all user
-exports.getAllUserForms = async (req, res) => {
+// ✅ GET ALL USERS
+exports.getAllUserForms = async (_req, res) => {
   try {
-    const forms = await UserForm.find().sort({ createdAt: -1 });
+    const forms = await UserForm.find().sort({ createdAt: -1 }).lean();
+
     res.status(200).json({
       success: true,
       count: forms.length,
       data: forms,
     });
   } catch (error) {
-    console.error("Error fetching user forms:", error);
-    res.status(500).json({
-      success: false,
-      message: "Failed to fetch user forms",
-      error: error.message,
-    });
+    handleError(res, error, "Failed to fetch user forms");
   }
 };
 
-// ✅ Get a single user form by ID
+// ✅ GET USER BY ID
 exports.getUserFormById = async (req, res) => {
   try {
-    const form = await UserForm.findById(req.params.id);
+    const form = await UserForm.findById(req.params.id).lean();
+
     if (!form) {
       return res.status(404).json({
         success: false,
         message: "User form not found",
       });
     }
+
     res.status(200).json({
       success: true,
       data: form,
     });
   } catch (error) {
-    console.error("Error fetching user form:", error);
-    res.status(500).json({
-      success: false,
-      message: "Failed to fetch user form",
-      error: error.message,
-    });
+    handleError(res, error, "Failed to fetch user form");
   }
 };
 
-// ✅ Update a user form (e.g., update status or other fields)
+// ✅ UPDATE USER FORM
 exports.updateUserForm = async (req, res) => {
   try {
-    const form = await UserForm.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
-    });
+    const updatedForm = await UserForm.findByIdAndUpdate(
+      req.params.id,
+      { $set: req.body },
+      { new: true }
+    );
 
-    if (!form) {
+    if (!updatedForm) {
       return res.status(404).json({
         success: false,
         message: "User form not found",
@@ -106,38 +91,30 @@ exports.updateUserForm = async (req, res) => {
     res.status(200).json({
       success: true,
       message: "User form updated successfully!",
-      data: form,
+      data: updatedForm,
     });
   } catch (error) {
-    console.error("Error updating user form:", error);
-    res.status(500).json({
-      success: false,
-      message: "Failed to update user form",
-      error: error.message,
-    });
+    handleError(res, error, "Failed to update user form");
   }
 };
 
-// ✅ Delete a user form
+// ✅ DELETE USER FORM
 exports.deleteUserForm = async (req, res) => {
   try {
-    const form = await UserForm.findByIdAndDelete(req.params.id);
-    if (!form) {
+    const deletedForm = await UserForm.findByIdAndDelete(req.params.id);
+
+    if (!deletedForm) {
       return res.status(404).json({
         success: false,
         message: "User form not found",
       });
     }
+
     res.status(200).json({
       success: true,
       message: "User form deleted successfully!",
     });
   } catch (error) {
-    console.error("Error deleting user form:", error);
-    res.status(500).json({
-      success: false,
-      message: "Failed to delete user form",
-      error: error.message,
-    });
+    handleError(res, error, "Failed to delete user form");
   }
 };

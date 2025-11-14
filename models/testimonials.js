@@ -1,19 +1,21 @@
 const mongoose = require("mongoose");
 
-const userFormSchema = new mongoose.Schema(
+const testimonialSchema = new mongoose.Schema(
   {
-    fullname: {
+    fullName: {
       type: String,
       required: true,
       trim: true,
     },
+    email: {
+      type: String,
+      required: true,
+    },
     country: {
       type: String,
+      required: true,
     },
     city: {
-      type: String,
-    },
-    email: {
       type: String,
       required: true,
     },
@@ -21,13 +23,13 @@ const userFormSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-
-    status: {
-      type: Boolean,
-      default: false,
+    feedbackText: {
+      type: String,
+      required: true,
     },
   },
+
   { timestamps: true }
 );
 
-module.exports = mongoose.model("userForm", userFormSchema);
+module.exports = mongoose.model("Testimonials", testimonialSchema);

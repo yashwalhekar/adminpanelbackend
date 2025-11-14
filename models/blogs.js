@@ -1,27 +1,24 @@
 const mongoose = require("mongoose");
 
-const userFormSchema = new mongoose.Schema(
+const blogSchema = new mongoose.Schema(
   {
-    fullname: {
+    title: {
       type: String,
       required: true,
       trim: true,
     },
-    country: {
+    creator: {
       type: String,
+      required: true,
+      trim: true,
     },
-    city: {
-      type: String,
-    },
-    email: {
+    content: {
       type: String,
       required: true,
     },
-    phone: {
+    wordFile: {
       type: String,
-      required: true,
     },
-
     status: {
       type: Boolean,
       default: false,
@@ -30,4 +27,4 @@ const userFormSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-module.exports = mongoose.model("userForm", userFormSchema);
+module.exports = mongoose.model("Bolgs", blogSchema);
