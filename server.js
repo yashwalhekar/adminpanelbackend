@@ -19,14 +19,12 @@ app.use(
       "http://localhost:3000",
       "https://adminpanelfrontend-two.vercel.app",
       "https://herencia-hispana.vercel.app",
+      " https://www.xn--herenciahispaa-2nb.com/",
     ],
     credentials: true,
   })
 );
 app.use(express.json());
-
-// ❌ (Optional) Remove this if all uploads go to Cloudinary
-// app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // ✅ Routes
 app.use("/api/auth", authRoutes);
