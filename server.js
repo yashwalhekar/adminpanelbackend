@@ -19,7 +19,9 @@ app.use(
       "http://localhost:3000",
       "https://adminpanelfrontend-two.vercel.app",
       "https://herencia-hispana.vercel.app",
-      " https://www.xn--herenciahispaa-2nb.com/",
+      "https://www.xn--herenciahispaa-2nb.com",
+      "https://herenciahispana.com",
+      "https://www.herenciahispana.com",
     ],
     credentials: true,
   })
