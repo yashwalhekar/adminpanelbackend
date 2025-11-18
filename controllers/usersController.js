@@ -13,10 +13,10 @@ const handleError = (res, error, message) => {
 // ✅ CREATE - Add new UserForm
 exports.createUserForm = async (req, res) => {
   try {
-    const { fullname, country, city, email, phone, status } = req.body;
+    const { fullName, country, city, email, phone, status } = req.body;
 
     const newForm = new UserForm({
-      fullname,
+      fullName,
       country,
       city,
       email,
