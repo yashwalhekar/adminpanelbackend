@@ -13,9 +13,9 @@ const uploadToCloudinary = (fileBuffer) =>
 
 exports.createBlog = async (req, res) => {
   try {
-    const { title, creator, content, wordFile, timeChips, slugs } = req.body;
+    const { title, creator, content, wordFile, timeChips, slug } = req.body;
 
-    if (!title || !creator || !content || !slugs) {
+    if (!title || !creator || !content || !slug) {
       return res
         .status(400)
         .json({ message: "Title, creator, and content are required" });
@@ -36,7 +36,7 @@ exports.createBlog = async (req, res) => {
       wordFile,
       imgUrl,
       timeChips,
-      slugs,
+      slug,
     });
 
     res.status(201).json({
@@ -59,7 +59,7 @@ exports.getAllBlogs = async (req, res) => {
 };
 exports.getBlogBySlug = async (req, res) => {
   try {
-    const blog = await Blog.findOne({ slugs: req.params.slug });
+    const blog = await Blog.findOne({ slug: req.params.slug });
     if (!blog) return res.status(404).json({ message: "Blog not found" });
     res.status(200).json(blog);
   } catch (error) {
@@ -69,11 +69,11 @@ exports.getBlogBySlug = async (req, res) => {
 // Update Blog
 exports.updateBlog = async (req, res) => {
   try {
-    const { title, creator, content, slugs, timeChips } = req.body;
+    const { title, creator, content, slug, timeChips } = req.body;
 
     const updatedBlog = await Blog.findByIdAndUpdate(
       req.params.id,
-      { title, creator, content, slugs, timeChips },
+      { title, creator, content, slug, timeChips },
       { new: true }
     );
 

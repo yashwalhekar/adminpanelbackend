@@ -7,7 +7,7 @@ const blogSchema = new mongoose.Schema(
     content: { type: String, required: true },
 
     wordFile: { type: String },
-    slugs: { type: String },
+    slug: { type: String },
 
     imgUrl: { type: String },
 
