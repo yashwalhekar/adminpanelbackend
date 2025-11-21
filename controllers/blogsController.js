@@ -13,9 +13,9 @@ const uploadToCloudinary = (fileBuffer) =>
 
 exports.createBlog = async (req, res) => {
   try {
-    const { title, creator, content, wordFile, timeChips } = req.body;
+    const { title, creator, content, wordFile, timeChips, slugs } = req.body;
 
-    if (!title || !creator || !content) {
+    if (!title || !creator || !content || !slugs) {
       return res
         .status(400)
         .json({ message: "Title, creator, and content are required" });
@@ -36,6 +36,7 @@ exports.createBlog = async (req, res) => {
       wordFile,
       imgUrl,
       timeChips,
+      slugs,
     });
 
     res.status(201).json({
@@ -60,11 +61,11 @@ exports.getAllBlogs = async (req, res) => {
 // Update Blog
 exports.updateBlog = async (req, res) => {
   try {
-    const { title, creator, content } = req.body;
+    const { title, creator, content, slugs, timeChips } = req.body;
 
     const updatedBlog = await Blog.findByIdAndUpdate(
       req.params.id,
-      { title, creator, content },
+      { title, creator, content, slugs, timeChips },
       { new: true }
     );
 
