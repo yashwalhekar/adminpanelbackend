@@ -66,6 +66,15 @@ exports.getBlogBySlug = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+exports.getActiveBlogs = async (req, res) => {
+  try {
+    const blogs = await Blog.find({ status: true }); // fetch only active blogs
+    res.status(200).json(blogs);
+  } catch (error) {
+    res.status(500).json({ message: "Failed to fetch blogs", error });
+  }
+};
 // Update Blog
 exports.updateBlog = async (req, res) => {
   try {
