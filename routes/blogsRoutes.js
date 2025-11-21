@@ -6,6 +6,7 @@ const {
   updateBlog,
   deleteBlog,
   toggleBlogStatus,
+  getBlogBySlug,
 } = require("../controllers/blogsController");
 const router = express.Router();
 const auth = require("../middleware/authMiddleware");
@@ -19,6 +20,7 @@ const upload = multer({
 
 router.post("/", auth, upload.single("image"), createBlog); // create blog
 router.get("/", getAllBlogs);
+router.get("/slug/:slug", getBlogBySlug); // Single by slug
 router.put("/:id", auth, upload.single("image"), updateBlog);
 router.delete("/:id", deleteBlog);
 router.put("/:id/status", toggleBlogStatus);
