@@ -7,11 +7,12 @@ const blogSchema = new mongoose.Schema(
     content: { type: String, required: true },
 
     wordFile: { type: String },
-    slug: { type: String },
 
     imgUrl: { type: String },
 
     timeChips: { type: String },
+
+    slug: { type: String, required: true },
 
     status: { type: Boolean, default: false },
   },
