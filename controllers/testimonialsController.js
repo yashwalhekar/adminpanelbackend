@@ -56,6 +56,15 @@ exports.getAllTestimonials = async (_req, res) => {
   }
 };
 
+exports.getActiveTestimonials = async (req, res) => {
+  try {
+    const testimonial = await Testimonial.find({ status: true }); // fetch only active blogs
+    res.status(200).json(testimonial);
+  } catch (error) {
+    res.status(500).json({ message: "Failed to fetch blogs", error });
+  }
+};
+
 // UPDATE
 exports.updateTestimonial = async (req, res) => {
   try {
@@ -100,5 +109,28 @@ exports.deleteTestimonial = async (req, res) => {
     });
   } catch (error) {
     handleError(res, error, "Failed to delete testimonial");
+  }
+};
+
+exports.toggleTestimonialStatus = async (req, res) => {
+  try {
+    const testimonial = await Testimonial.findById(req.params.id);
+
+    if (!testimonial) {
+      return res.status(404).json({ message: "Testimonial not found" });
+    }
+
+    testimonial.status = !testimonial.status;
+    await testimonial.save();
+
+    res.status(200).json({
+      success: true,
+      message: `Testimonial ${
+        testimonial.status ? "activated" : "deactivated"
+      } successfully`,
+      data: testimonial,
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Failed to update status", error });
   }
 };
