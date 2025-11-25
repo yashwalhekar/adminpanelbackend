@@ -41,7 +41,7 @@ exports.getAllTestimonials = async (_req, res) => {
   try {
     const testimonials = await Testimonial.find(
       {},
-      "fullName feedbackText city country"
+      "fullName feedbackText city country email phone status"
     )
       .sort({ createdAt: -1 })
       .lean();
@@ -55,7 +55,6 @@ exports.getAllTestimonials = async (_req, res) => {
     handleError(res, error, "Failed to fetch testimonials");
   }
 };
-
 exports.getActiveTestimonials = async (req, res) => {
   try {
     const testimonial = await Testimonial.find({ status: true }); // fetch only active blogs

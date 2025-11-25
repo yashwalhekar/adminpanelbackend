@@ -76,7 +76,6 @@ exports.getActiveAds = async (req, res) => {
     const now = new Date();
 
     const ads = await Ad.find({
-      isActive: true,
       startDate: { $lte: now },
       $or: [{ endDate: null }, { endDate: { $gte: now } }],
     })
@@ -86,8 +85,7 @@ exports.getActiveAds = async (req, res) => {
 
     res.status(200).json(ads);
   } catch (error) {
-    console.error("Get active ads error:", error);
-    res.status(500).json({ message: "Server error", error: error.message });
+    res.status(500).json({ message: "Server error" });
   }
 };
 
