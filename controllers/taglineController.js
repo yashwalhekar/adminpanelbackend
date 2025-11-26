@@ -42,6 +42,15 @@ exports.getAllTaglines = async (req, res) => {
   }
 };
 
+exports.getActiveTagline = async (req, res) => {
+  try {
+    const tagline = await Tagline.find({ isActive: true });
+    res.status(200).json(tagline);
+  } catch (error) {
+    res.status(500).json({ message: "Failed to fetch Taglines", error });
+  }
+};
+
 // ✅ Update tagline
 exports.updateTagline = async (req, res) => {
   try {
