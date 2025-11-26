@@ -1,33 +1,29 @@
 const freebies = require("../models/freebiesPdfSchema");
 
-const handleError = (res, error, message) => {
-  console.log(message, error);
-  res.status(500).json({
+// Reusable error handler
+const handleError = (res, error, message = "Server error") => {
+  console.log(message, error.message);
+  return res.status(500).json({
     success: false,
     message,
     error: error.message,
   });
 };
 
-//send form data to backend
-
 exports.moduleRequest = async (req, res) => {
   try {
     const { email, phone } = req.body;
-    const newRequest = new freebies({
-      email,
-      phone,
-    });
-    const sendRequest = await newRequest.save();
+    console.log("REQ BODY =>", req.body);
+    const newRequest = new freebies({ email, phone });
+    const savedData = await newRequest.save();
 
-    res.status(201).json({
+    return res.status(201).json({
       success: true,
-      message: "Request added successfully!!",
-      data: sendRequest,
+      message: "Request submitted successfully!",
+      data: savedData,
     });
   } catch (error) {
-    console.log(error.message);
-    handleError();
+    return handleError(res, error, "Failed to submit request.");
   }
 };
 
@@ -35,13 +31,27 @@ exports.getAllRequests = async (req, res) => {
   try {
     const requests = await freebies.find().sort({ createdAt: -1 }).lean();
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
-      message: "Data get successfully!!",
+      message: "Data retrieved successfully!",
       data: requests,
     });
   } catch (error) {
-    console.log(error.message);
-    handleError();
+    return handleError(res, error, "Failed to retrieve data.");
+  }
+};
+
+//delete
+
+exports.deleteData = async (req, res) => {
+  try {
+    const deleteFreebie = await freebies.findByIdAndDelete(req.params.id);
+
+    if (!deleteFreebie) {
+      return res.status(404).json({ message: "freebie not found" });
+    }
+    res.status(200).json({ message: "Freebiw deleted successfully" });
+  } catch (error) {
+    return handleError(res, error, "Failed to delete data.");
   }
 };

@@ -27,6 +27,14 @@ exports.createTagline = async (req, res) => {
 // ✅ Get all taglines
 exports.getAllTaglines = async (req, res) => {
   try {
+    const today = new Date();
+
+    // Auto deactivate expired taglines
+    await Tagline.updateMany(
+      { endDate: { $lt: today }, isActive: true },
+      { isActive: false }
+    );
+
     const taglines = await Tagline.find().sort({ createdAt: -1 });
     res.status(200).json(taglines);
   } catch (error) {

@@ -1,11 +1,12 @@
 const mongoose = require("mongoose");
 
-freebiesSchema = new mongoose.Schema(
+const freebiesSchema = new mongoose.Schema(
   {
     email: {
       type: String,
       lowercase: true,
       trim: true,
+      required: true,
     },
     phone: {
       type: String,
