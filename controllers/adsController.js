@@ -43,22 +43,12 @@ exports.createAd = async (req, res) => {
 // ✅ Get all Ads (Paginated + Indexed + Lightweight)
 exports.getAllAds = async (req, res) => {
   try {
-    const now = new Date();
+    const today = new Date();
 
-    // 🔹 Automatically deactivate ads whose end date has passed
+    // Auto deactivate expired ads
     await Ad.updateMany(
-      { endDate: { $lt: now }, isActive: true },
+      { endDate: { $lt: today }, isActive: true },
       { isActive: false }
-    );
-
-    // 🔹 Automatically activate ads that are within valid date range
-    await Ad.updateMany(
-      {
-        startDate: { $lte: now },
-        $or: [{ endDate: null }, { endDate: { $gte: now } }],
-        isActive: false,
-      },
-      { isActive: true }
     );
 
     const ads = await Ad.find().sort({ createdAt: -1 });
@@ -72,19 +62,10 @@ exports.getAllAds = async (req, res) => {
 // ✅ Get only Active Ads (use lean + projection)
 exports.getActiveAds = async (req, res) => {
   try {
-    const now = new Date();
-
-    const ads = await Ad.find({
-      startDate: { $lte: now },
-      $or: [{ endDate: null }, { endDate: { $gte: now } }],
-    })
-      .select("title imageUrl startDate endDate")
-      .sort({ createdAt: -1 })
-      .lean();
-
+    const ads = await Ad.find({ isActive: true });
     res.status(200).json(ads);
   } catch (error) {
-    res.status(500).json({ message: "Server error" });
+    res.status(500).json({ message: "Failed to fetch Taglines", error });
   }
 };
 
