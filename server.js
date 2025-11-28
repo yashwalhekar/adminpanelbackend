@@ -2,10 +2,7 @@ require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
-const serverless = require("serverless-http");
-
 require("./utils/adSchedular");
-
 const authRoutes = require("./routes/authRoutes");
 const adsRoutes = require("./routes/adsRoutes");
 const taglineRoutes = require("./routes/taglineRoutes");
@@ -13,13 +10,12 @@ const usersRoutes = require("./routes/userRoutes");
 const testimonialRoutes = require("./routes/testimonialRoutes");
 const blogsRoutes = require("./routes/blogsRoutes");
 const freebiesRoutes = require("./routes/freebiesRoutes");
-
 const app = express();
+const PORT = process.env.PORT || 5000;
 
-// ----------- Middleware -------------
+// ✅ Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
 app.use(
   cors({
     origin: [
@@ -34,7 +30,10 @@ app.use(
   })
 );
 
-// ------------ Routes ----------------
+// ❌ (Optional) Remove this if all uploads go to Cloudinary
+// app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+
+// ✅ Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/ads", adsRoutes);
 app.use("/api/tagline", taglineRoutes);
@@ -43,18 +42,17 @@ app.use("/api/testimonials", testimonialRoutes);
 app.use("/api/blogs", blogsRoutes);
 app.use("/api/freebies", freebiesRoutes);
 
-// Default route
+// ✅ Root endpoint
 app.get("/", (req, res) => res.send("Backend running successfully 🚀"));
 
-// ----------- MongoDB Connection -------------
+// ✅ MongoDB connection
 mongoose
-  .connect(process.env.MONGO_URI)
-  .then(() => console.log("✅ MongoDB connected"))
+  .connect(process.env.MONGO_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
+  .then(() => {
+    console.log("✅ MongoDB connected");
+    app.listen(PORT, () => console.log(`🚀 Server listening on port ${PORT}`));
+  })
   .catch((err) => console.error("❌ MongoDB connection error:", err));
-
-// ❌ REMOVE `app.listen()` FOR VERCEL
-// app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
-
-// 👉 Export for Vercel
-module.exports = app;
-module.exports.handler = serverless(app);
