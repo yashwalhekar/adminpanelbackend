@@ -43,30 +43,29 @@ exports.createAd = async (req, res) => {
 // ✅ Get all Ads (Paginated + Indexed + Lightweight)
 exports.getAllAds = async (req, res) => {
   try {
-    const { page = 1, limit = 10, search = "" } = req.query;
+    const now = new Date();
 
-    const query = search ? { title: { $regex: search, $options: "i" } } : {};
+    // 🔹 Automatically deactivate ads whose end date has passed
+    await Ad.updateMany(
+      { endDate: { $lt: now }, isActive: true },
+      { isActive: false }
+    );
 
-    const [ads, total] = await Promise.all([
-      Ad.find(query)
-        .select("title imageUrl isActive startDate endDate createdAt") // Return only needed fields
-        .populate("createdBy", "name email")
-        .sort({ createdAt: -1 })
-        .skip((page - 1) * limit)
-        .limit(Number(limit))
-        .lean(), // Faster than normal find (no mongoose overhead)
-      Ad.countDocuments(query),
-    ]);
+    // 🔹 Automatically activate ads that are within valid date range
+    await Ad.updateMany(
+      {
+        startDate: { $lte: now },
+        $or: [{ endDate: null }, { endDate: { $gte: now } }],
+        isActive: false,
+      },
+      { isActive: true }
+    );
 
-    res.status(200).json({
-      total,
-      page: Number(page),
-      totalPages: Math.ceil(total / limit),
-      ads,
-    });
+    const ads = await Ad.find().sort({ createdAt: -1 });
+
+    res.status(200).json(ads);
   } catch (error) {
-    console.error("Get ads error:", error);
-    res.status(500).json({ message: "Server error", error: error.message });
+    res.status(500).json({ message: "Error fetching ads", error });
   }
 };
 
